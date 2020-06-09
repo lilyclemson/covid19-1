@@ -150,7 +150,73 @@ EXPORT Utils := MODULE
               );
 
           RETURN IF(EXISTS(queryResults), publishResults, DATASET([], PublishResultsLayout));
-      END;
+    END;
+
+    EXPORT removeFiles(STRING clusterName) := FUNCTION
+        files_list := STD.File.LogicalFileList( );
+        Filenames := files_list( STD.STR.FIND(cluster, 'clusterName') <> 0);
+        RETURN APPLY(Filenames,STD.FILE.DeleteLogicalFile('~'+Filenames.name));
+    END;
+    
+
+     EXPORT deleteQueries( STRING espURL = '',
+                            STRING username = '',
+                            STRING userPW = '') := FUNCTION
+        myESPURL := CreateESPURL(espURL);
+        auth := CreateAuthHeaderValue(username, userPW);
+
+        QueryResultLayout := RECORD
+            STRING  rWUID       {XPATH('Wuid')};
+            STRING  rID         {XPATH('Id')};
+            STRING  rNAME       {XPATH('Name')};
+        END;
+
+        queryResults := SOAPCALL
+            (
+                myESPURL,
+                'WUListQueries',
+                {
+                    STRING Activated {XPATH('Activated')} := '1';                 
+                },
+                DATASET(QueryResultLayout),
+                XPATH('WUListQueriesResponse/QuerysetQueries/QuerySetQuery'),
+                HTTPHEADER('Authorization', auth),
+                TIMEOUT(60), ONFAIL(SKIP)
+            );
+
+        deleteResultLayout := RECORD
+            STRING  rQueryId       {XPATH('QueryId')};
+            STRING  rSuspended     {XPATH('Suspended')};
+            STRING  rSuccess       {XPATH('Success')};
+            STRING  rCode          {XPATH('Code')};
+            STRING  rMessage       {XPATH('Message')};
+        END;
+
+
+        ActionLayout := RECORD
+            STRING rQueryID {XPATH('QueryId')};
+            // STRING rSuspended {XPATH('ClientState/Suspended')};
+        END;
+
+        queries2Delete := PROJECT(queryResults, TRANSFORM(ActionLayout , SELF.rQueryID := LEFT.rID));
+
+        deleteResults := SOAPCALL
+            (
+                myESPURL,
+                'WUQuerysetQueryAction',
+                {
+                    STRING pAction {XPATH('Action')} := 'Delete';
+                    STRING pQuerySetName {XPATH('QuerySetName')} := 'roxie';
+                    DATASET(ActionLayout) pNames {XPATH('Queries/Query')} := queries2delete;
+                },
+                DATASET(deleteResultLayout),
+                XPATH('WUQuerysetActionResponse/Results/Result'),
+                HTTPHEADER('Authorization', auth),
+                TIMEOUT(60), ONFAIL(SKIP)
+            );
+        RETURN deleteResults;
+    END;
+      
   
   END;
 
@@ -196,4 +262,6 @@ EXPORT Utils := MODULE
     END;
 
   END;
+
+
 END;
