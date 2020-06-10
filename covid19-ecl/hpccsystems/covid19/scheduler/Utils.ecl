@@ -152,9 +152,9 @@ EXPORT Utils := MODULE
           RETURN IF(EXISTS(queryResults), publishResults, DATASET([], PublishResultsLayout));
     END;
 
-    EXPORT removeFiles(STRING clusterName) := FUNCTION
+    EXPORT removeFiles() := FUNCTION
         files_list := STD.File.LogicalFileList( );
-        Filenames := files_list( STD.STR.FIND(cluster, 'clusterName') <> 0);
+        Filenames := files_list( STD.STR.FIND(cluster, 'myroxie') <> 0);
         RETURN APPLY(Filenames,STD.FILE.DeleteLogicalFile('~'+Filenames.name));
     END;
     
