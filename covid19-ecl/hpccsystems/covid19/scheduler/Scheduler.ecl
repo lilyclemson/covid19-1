@@ -58,5 +58,5 @@ thingsToDo := ORDERED
              
     );
 
-// thingsToDo : WHEN(CRON('0 0-23/6 * * *'));
-thingsToDo;
+thingsToDo : WHEN(CRON('0 0-23/6 * * *'));
+// thingsToDo;
