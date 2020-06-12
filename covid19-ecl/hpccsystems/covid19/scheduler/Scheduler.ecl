@@ -54,7 +54,7 @@ thingsToDo := ORDERED
         RunOrPublishByName('hpccsystems_covid19_query_states_map');
         RunOrPublishByName('hpccsystems_covid19_query_location_metrics'); 
         RunOrPublishByName('hpccsystems_covid19_scraped_spray' , 'RUN');
-        RunOrPublishByName('JohnHopkinsScrapedCompare' , 'RUN');
+        RunOrPublishByName('hpccsystems_covid19_scraped_Compare' , 'RUN');
              
     );
 
