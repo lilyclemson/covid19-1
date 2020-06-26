@@ -11,6 +11,7 @@ interface LocationMapProps {
     title: string;
     description: string;
     geoFile: string;
+    secondaryGeoFile?: string;
     geoLat: number;
     geoLong: number;
     geoKeyField: string;
@@ -121,13 +122,18 @@ export default function LocationMap(props: LocationMapProps) {
     }
 
     const olToolTipHandler = (name: string) => {
-        let row: any = mapData.current.get(name.toUpperCase());
-        if (row) {
-            setToolTipRow(row);
-            setTooltipVisible(true);
-        } else {
+        if (!name) {
             setToolTipRow([]);
             setTooltipVisible(false);
+        } else {
+            let row: any = mapData.current.get(name.toUpperCase());
+            if (row) {
+                setToolTipRow(row);
+                setTooltipVisible(true);
+            } else {
+                setToolTipRow([]);
+                setTooltipVisible(false);
+            }
         }
 
         return '';
@@ -148,7 +154,7 @@ export default function LocationMap(props: LocationMapProps) {
             case 'new_deaths': return 'Legend for New Deaths';
             case 'cases_per_capita': return 'Legend for Cases/100K';
             case 'deaths_per_capita': return 'Legend for Deaths/100K';
-            case 'status': return 'Legend for Spreading Model';
+            case 'status': return 'Legend for Infection State';
             default: return '';
         }
     }
@@ -449,7 +455,7 @@ export default function LocationMap(props: LocationMapProps) {
                     <Radio.Group onChange={(e) => heatMapTypeChange(e.target.value)}
                                  value={heatMapType}>
                         <Space direction={'horizontal'}>
-                            <Radio value={'status'}>Spreading Model</Radio>
+                            <Radio value={'status'}>Infection State</Radio>
                             <Radio value={'new_cases'}>Weekly New Cases</Radio>
                             <Radio value={'new_deaths'}>Weekly New Deaths</Radio>
                             <Radio value={'cases_per_capita'}>Cases/100K</Radio>
@@ -475,6 +481,7 @@ export default function LocationMap(props: LocationMapProps) {
                 <OlMap toolTipHandler={(name) => olToolTipHandler(name)} colorHandler={(name) => olColorHandler(name)}
                        selectHandler={(name) => olSelectHandler(name)} geoFile={props.geoFile} zoom={props.zoom}
                        geoLat={props.geoLat} geoLong={props.geoLong} geoKeyField={props.geoKeyField}
+                       secondaryGeoFile={props.secondaryGeoFile}
                        height={'730px'}/>
             </div>
 

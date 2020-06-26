@@ -1,12 +1,21 @@
 import React, {Component} from 'react';
-import {Button, Layout, Menu} from 'antd';
+import {Layout, Menu} from 'antd';
 import './App.css';
 import Nav from "./components/Nav";
 import ModuleService, {Module} from "./services/ModuleService"
 import ListBase from "./components/ListBase";
 import {AuthForm} from "./components/AuthForm";
 import AuthService from "./services/AuthService";
-
+import {
+    AppstoreOutlined,
+    BarChartOutlined,
+    CloudOutlined,
+    ShopOutlined,
+    TeamOutlined,
+    UserOutlined,
+    UploadOutlined,
+    VideoCameraOutlined,
+} from '@ant-design/icons';
 const {SubMenu} = Menu;
 const {Header, Sider} = Layout;
 
@@ -83,7 +92,7 @@ export class App extends Component<AppProps, AppState> {
             if (item.children && item.children.length > 0) {
                 return <SubMenu key={item.id} title={item.title}>{this.renderMenu(item.children)}</SubMenu>
             } else {
-                return <Menu.Item key={item.id} title={item.title}>{item.title}</Menu.Item>
+                return <Menu.Item key={item.id} title={item.title} >{item.title}</Menu.Item>
             }
         })
     }
@@ -101,16 +110,6 @@ export class App extends Component<AppProps, AppState> {
         }
     }
 
-    renderMenuButtons() {//TODO: Placeholder for the logout button
-        // if (this.authService.isAuthenticated()) {
-        //     return <Button style={{float: "right", marginTop: 20}} type="link" onClick={() => this.logout()}>Logout</Button>
-        // } else {
-            //return '';
-        // }
-        return <Button style={{float: "right", marginTop: 20}} type="link" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</Button>
-    }
-
-
     render() {
         return (
             <Layout style={{height: "100vh"}}>
@@ -127,18 +126,21 @@ export class App extends Component<AppProps, AppState> {
                         {
                             this.renderMenu(this.state.menus)
                         }
-                        {
-                            this.renderMenuButtons()//logout, disclaimers
-                        }
+                        <Menu.Item>
+                            <a style={{color: 'lightblue' , fontSize:'9px', fontWeight:'bold'}} rel="noopener noreferrer" target={"_blank"} href={"open_database_license.pdf"} >Open Database License</a>
+                        </Menu.Item>
+                        <Menu.Item>
+                            <a style={{color: 'lightblue', fontSize:'9px', fontWeight:'bold'}}  rel="noopener noreferrer" target={"_blank"} href={"https://github.com/hpcc-systems/covid19"} >GitHub</a>
+                        </Menu.Item>
                     </Menu>
 
                 </Header>
 
                 <Layout>
-                    <Sider width={240}>
+                    {/*<Sider width={200}>*/}
                         <Nav onSelect={(key: string) => this.setState({selectedListId: key})}
                              selectedKey={this.state.selectedListId} module={this.state.selectedModule}/>
-                    </Sider>
+                    {/*</Sider>*/}
 
                     {this.renderAuthForm()}
 
