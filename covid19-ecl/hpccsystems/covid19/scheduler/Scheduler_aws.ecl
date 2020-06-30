@@ -36,7 +36,7 @@ thingsToDo := ORDERED
 
     (
         KUtils.genInstanceID;
-        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles' , 'RUN');
+        // RunOrPublishByName('hpccsystems_covid19_removeQueryFiles' , 'RUN');
         RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('CountiesFIPSClean' , 'RUN');
@@ -58,5 +58,5 @@ thingsToDo := ORDERED
              
     );
 
-// thingsToDo : WHEN(CRON('0 0-23/6 * * *'));
-thingsToDo;
+thingsToDo : WHEN(CRON('45 8,23 * * *'));
+// thingsToDo;
