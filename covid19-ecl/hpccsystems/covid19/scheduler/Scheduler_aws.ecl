@@ -26,17 +26,19 @@ RunOrPublishByName(STRING wuJobName, STRING ActionType = 'PUBLISH') := FUNCTION
     // logEndAction := Std.System.Log.AddWorkunitInformation(Std.Date.SecondsToString(Std.Date.CurrentSeconds()) + ': success: ' + IF(wuid <> '', 'true', 'false'));
     // Kafka message
     guid :=  DATASET('~covid19::kafka::guid', {STRING s}, FLAT)[1].s;
-    sendMsg := KUtils.sendMsg(wuid := wuid,instanceid := guid, msg := 'Sending message with instanceid ' + guid );   
+    sendMsg := KUtils.sendMsg(wuid := wuid,instanceid := guid, msg := 'Prod Cluster: sending message with instanceid ' + guid );   
     RETURN SEQUENTIAL(ast, logStartAction, sendMsg);
     // RETURN SEQUENTIAL(ast, logStartAction, logEndAction);
 
 END;
 
+
+
 thingsToDo := ORDERED
 
     (
         KUtils.genInstanceID;
-        // RunOrPublishByName('hpccsystems_covid19_removeQueryFiles' , 'RUN');
+        RunOrPublishByName('hpccsystems_covid19_removeQueryFiles' , 'RUN');
         RunOrPublishByName('hpccsystems_covid19_spray' , 'RUN');
         RunOrPublishByName('JohnHopkinsClean' , 'RUN');
         RunOrPublishByName('CountiesFIPSClean' , 'RUN');
@@ -53,8 +55,8 @@ thingsToDo := ORDERED
         RunOrPublishByName('hpccsystems_covid19_query_metrics_period');
         RunOrPublishByName('hpccsystems_covid19_query_states_map');
         RunOrPublishByName('hpccsystems_covid19_query_location_metrics'); 
-        RunOrPublishByName('hpccsystems_covid19_scraped_spray' , 'RUN');
-        RunOrPublishByName('hpccsystems_covid19_scraped_Compare' , 'RUN');
+        // RunOrPublishByName('hpccsystems_covid19_scraped_spray' , 'RUN');
+        // RunOrPublishByName('hpccsystems_covid19_scraped_Compare' , 'RUN');
              
     );
 

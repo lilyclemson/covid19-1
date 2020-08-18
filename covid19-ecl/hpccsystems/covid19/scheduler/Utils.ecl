@@ -264,4 +264,50 @@ EXPORT Utils := MODULE
   END;
 
 
+
+
+  EXPORT newKafkaUtils := MODULE
+
+      EXPORT applicationId:= '826df5ad-5b10-4484-9f5e-0879166d7944';
+      EXPORT DataflowId_v2 := '6e8ed8f9-ab3b-42e4-bec5-b2c5208f2f80';
+      EXPORT DataflowId_v1 := 'dfd51c4b-90b1-4ee8-af72-01b56173f002';
+      EXPORT guidFilePath := '~covid19::kafka::guid';
+      EXPORT defaultGUID :=  DATASET(guidFilePath, {STRING s}, FLAT)[1].s;
+      EXPORT defaultTopic := 'Dataflow';
+      EXPORT defaultBroker := '18.224.242.220:9092';
+      EXPORT l_json := RECORD
+        STRING applicationid;
+        STRING dataflowId;
+        STRING wuid;
+        STRING instanceId;
+        STRING msg;
+      END;
+
+      EXPORT genInstanceID := FUNCTION
+          guid := STD.Date.Today() + '' + STD.Date.CurrentTime(True);
+          guidDS := DATASET(ROW({guid}, {STRING s}));
+          RETURN OUTPUT( guidDS, , guidFilePath, OVERWRITE);
+      END;
+
+      EXPORT sendMsg(
+                    STRING broker = defaultBroker,
+                    STRING topic = defaultTopic,
+                    STRING appID = applicationId,
+                    STRING dataflowid = Dataflowid_v1,
+                    STRING wuid = WORKUNIT,
+                    STRING instanceid = defaultGUID,
+                    STRING msg = '') := FUNCTION
+
+
+      j :=  '{' + TOJSON(ROW({appID, dataflowId, wuid, instanceid, msg},l_json)) + '}';
+      kafkaMsg := DATASET([{j}], {STRING line});
+
+      p := kafka.KafkaPublisher( topic, broker );
+      sending := p.PublishMessage(kafkaMsg[1].line);
+      o := OUTPUT(kafkaMsg );
+
+      RETURN WHEN(sending,o);
+    END;
+
+  END;
 END;
