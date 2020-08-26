@@ -1,4 +1,4 @@
-IMPORT $.Utils.SOAPUtils AS SUtils;
+IMPORT $.^.scheduler.Utils.SOAPUtils AS SUtils;
 
 #WORKUNIT('name', 'hpccsystems_covid19_removeQueryFiles');
 //Remove all roxie related files
